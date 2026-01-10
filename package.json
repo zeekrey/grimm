@@ -1,0 +1,31 @@
+{
+  "name": "grimm",
+  "version": "0.1.0",
+  "description": "Grimm smart speaker - voice assistant powered by AI",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "bun test",
+    "test:audio": "bun test src/audio/",
+    "test:emulated": "bun run src/test-wake-word-emulated.ts",
+    "demo:wake": "bun run src/demo-wake-word.ts",
+    "demo:vad": "bun run src/demo-vad.ts",
+    "demo:llm": "bun run src/demo-llm.ts",
+    "fixtures:generate": "bun run tests/fixtures/generate-test-audio.ts",
+    "models:download": "bun run scripts/download-models.ts",
+    "deploy": "bash scripts/deploy.sh"
+  },
+  "dependencies": {
+    "@picovoice/pvrecorder-node": "^1.2.0",
+    "avr-vad": "^1.0.9",
+    "onnxruntime-node": "^1.20.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "license": "MIT"
+}
