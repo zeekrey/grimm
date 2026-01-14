@@ -96,23 +96,20 @@ export class TTSClient {
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/text-to-speech/${this.voiceId}`,
-        {
-          method: "POST",
-          headers: {
-            "xi-api-key": this.apiKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text,
-            model_id: this.model,
-            output_format: this.outputFormat,
-            voice_settings: this.voiceSettings,
-          }),
-          signal: controller.signal,
-        }
-      );
+      const url = `${API_BASE_URL}/text-to-speech/${this.voiceId}?output_format=${this.outputFormat}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "xi-api-key": this.apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          model_id: this.model,
+          voice_settings: this.voiceSettings,
+        }),
+        signal: controller.signal,
+      });
 
       if (!response.ok) {
         let errorBody: unknown;
@@ -167,23 +164,20 @@ export class TTSClient {
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/text-to-speech/${this.voiceId}/stream`,
-        {
-          method: "POST",
-          headers: {
-            "xi-api-key": this.apiKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text,
-            model_id: this.model,
-            output_format: this.outputFormat,
-            voice_settings: this.voiceSettings,
-          }),
-          signal: controller.signal,
-        }
-      );
+      const url = `${API_BASE_URL}/text-to-speech/${this.voiceId}/stream?output_format=${this.outputFormat}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "xi-api-key": this.apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          model_id: this.model,
+          voice_settings: this.voiceSettings,
+        }),
+        signal: controller.signal,
+      });
 
       if (!response.ok) {
         let errorBody: unknown;
