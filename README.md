@@ -30,14 +30,14 @@ Grimm listens for a wake word ("Hey Jarvis"), captures your voice command, proce
 
 ### For Raspberry Pi
 
-| Component | Recommendation | Notes |
-|-----------|---------------|-------|
-| **Raspberry Pi** | Pi 4 (4GB+) or Pi 5 | Pi 3 may work but slower |
-| **Microphone** | USB microphone or USB sound card with mic | Must support 16kHz sample rate |
-| **Speakers** | 3.5mm speakers, USB speakers, or Bluetooth | Any audio output works |
-| **Power Supply** | Official Pi power supply | 5V 3A for Pi 4/5 |
-| **SD Card** | 32GB+ Class 10 | For OS and application |
-| **Network** | WiFi or Ethernet | Required for API calls |
+| Component        | Recommendation                             | Notes                          |
+| ---------------- | ------------------------------------------ | ------------------------------ |
+| **Raspberry Pi** | Pi 4 (4GB+) or Pi 5                        | Pi 3 may work but slower       |
+| **Microphone**   | USB microphone or USB sound card with mic  | Must support 16kHz sample rate |
+| **Speakers**     | 3.5mm speakers, USB speakers, or Bluetooth | Any audio output works         |
+| **Power Supply** | Official Pi power supply                   | 5V 3A for Pi 4/5               |
+| **SD Card**      | 32GB+ Class 10                             | For OS and application         |
+| **Network**      | WiFi or Ethernet                           | Required for API calls         |
 
 ### Recommended Microphones
 
@@ -60,10 +60,10 @@ Grimm listens for a wake word ("Hey Jarvis"), captures your voice command, proce
 
 ### API Keys Required
 
-| Service | Purpose | Cost |
-|---------|---------|------|
-| [OpenRouter](https://openrouter.ai/keys) | LLM (Gemini 2.0 Flash) | Pay per use (~$0.10/1M tokens) |
-| [ElevenLabs](https://elevenlabs.io) | Text-to-Speech | Free tier available |
+| Service                                  | Purpose                  | Cost                                 |
+| ---------------------------------------- | ------------------------ | ------------------------------------ |
+| [OpenRouter](https://openrouter.ai/keys) | LLM (Gemini 2.0 Flash)   | Pay per use (~$0.10/1M tokens)       |
+| [ElevenLabs](https://elevenlabs.io)      | Text-to-Speech           | Free tier available                  |
 | [Spotify](https://developer.spotify.com) | Music control (optional) | Free (requires Premium for playback) |
 
 ## Quick Start (Development)
@@ -143,7 +143,7 @@ bun --version
 
 ```bash
 # On Raspberry Pi
-git clone https://github.com/yourusername/grimm.git
+git clone https://github.com/zeekrey/grimm.git
 cd grimm
 bun install
 bun run models:download
@@ -282,13 +282,13 @@ alsamixer
 
 ### Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OPENROUTER_API_KEY` | Yes | API key for LLM |
-| `ELEVENLABS_API_KEY` | No | API key for TTS (text output if not set) |
-| `SPOTIFY_CLIENT_ID` | No | Spotify app client ID |
-| `SPOTIFY_CLIENT_SECRET` | No | Spotify app client secret |
-| `SPOTIFY_REFRESH_TOKEN` | No | Spotify OAuth refresh token |
+| Variable                | Required | Description                              |
+| ----------------------- | -------- | ---------------------------------------- |
+| `OPENROUTER_API_KEY`    | Yes      | API key for LLM                          |
+| `ELEVENLABS_API_KEY`    | No       | API key for TTS (text output if not set) |
+| `SPOTIFY_CLIENT_ID`     | No       | Spotify app client ID                    |
+| `SPOTIFY_CLIENT_SECRET` | No       | Spotify app client secret                |
+| `SPOTIFY_REFRESH_TOKEN` | No       | Spotify OAuth refresh token              |
 
 ### Example .env File
 
@@ -339,8 +339,8 @@ Grimm supports plugins to extend functionality. See [plugins/README.md](plugins/
 
 ### Included Plugins
 
-| Plugin | Description | Setup |
-|--------|-------------|-------|
+| Plugin  | Description              | Setup                                                  |
+| ------- | ------------------------ | ------------------------------------------------------ |
 | Spotify | Control Spotify playback | [plugins/spotify/README.md](plugins/spotify/README.md) |
 
 ### Creating a Plugin
@@ -409,14 +409,14 @@ export default plugin;
 
 ### Components
 
-| Component | Technology | Runs On |
-|-----------|------------|---------|
-| Wake Word | OpenWakeWord (ONNX) | Local |
-| VAD | Silero VAD | Local |
-| Audio Capture | PvRecorder | Local |
-| LLM | Gemini 2.0 Flash | Cloud (OpenRouter) |
-| TTS | ElevenLabs | Cloud |
-| Plugins | Dynamic loading | Local |
+| Component     | Technology          | Runs On            |
+| ------------- | ------------------- | ------------------ |
+| Wake Word     | OpenWakeWord (ONNX) | Local              |
+| VAD           | Silero VAD          | Local              |
+| Audio Capture | PvRecorder          | Local              |
+| LLM           | Gemini 2.0 Flash    | Cloud (OpenRouter) |
+| TTS           | ElevenLabs          | Cloud              |
+| Plugins       | Dynamic loading     | Local              |
 
 ## Development
 
