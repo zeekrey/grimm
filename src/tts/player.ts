@@ -101,15 +101,13 @@ async function playWithMpv(audioBuffer: ArrayBuffer, format: string): Promise<vo
 
 /**
  * Play audio buffer using aplay (Linux/ALSA)
+ * Expects PCM format (pcm_16000, pcm_22050, pcm_24000)
  */
 async function playWithAplay(audioBuffer: ArrayBuffer, format: string): Promise<void> {
-  // aplay only supports raw PCM or WAV, not MP3
-  // For MP3, fall back to temp file with mpv or error
   if (format.startsWith("mp3")) {
-    throw new Error("aplay does not support MP3. Please install mpv.");
+    throw new Error("aplay does not support MP3. Use PCM format on Linux.");
   }
 
-  // Parse PCM format
   const sampleRate = format.includes("16000")
     ? 16000
     : format.includes("22050")

@@ -7,9 +7,12 @@
  * in real-time so users can identify which device is working.
  *
  * Usage: bun run audio:test-mic
+ *        bun run audio:test-mic --list    # Just list devices
+ *        bun run audio:test-mic --alsa    # Show ALSA devices too
  */
 
 import { PvRecorder } from "@picovoice/pvrecorder-node";
+import { spawn } from "child_process";
 import * as readline from "readline";
 
 const TEST_DURATION_MS = 5000; // 5 seconds per device
@@ -138,6 +141,39 @@ async function testDevice(deviceIndex: number, deviceName: string): Promise<void
 }
 
 /**
+ * Get ALSA capture devices using arecord -l
+ */
+async function getAlsaDevices(): Promise<string[]> {
+  return new Promise((resolve) => {
+    const arecord = spawn("arecord", ["-l"]);
+    let stdout = "";
+
+    arecord.stdout.on("data", (data: Buffer) => {
+      stdout += data.toString();
+    });
+
+    arecord.on("close", () => {
+      const devices: string[] = [];
+      const lines = stdout.split("\n");
+
+      for (const line of lines) {
+        // Match: "card 3: Device [USB PnP Sound Device], device 0: USB Audio [USB Audio]"
+        const match = line.match(/^card\s+(\d+):.+\[(.+?)\].+device\s+(\d+):/);
+        if (match) {
+          devices.push(`hw:${match[1]},${match[3]} - ${match[2]}`);
+        }
+      }
+
+      resolve(devices);
+    });
+
+    arecord.on("error", () => {
+      resolve([]);
+    });
+  });
+}
+
+/**
  * Prompt user to select a device
  */
 async function promptDeviceSelection(devices: string[]): Promise<number | null> {
@@ -183,29 +219,61 @@ async function promptDeviceSelection(devices: string[]): Promise<number | null> 
  * Main function
  */
 async function main() {
+  const args = process.argv.slice(2);
+  const showAlsa = args.includes("--alsa");
+  const listOnly = args.includes("--list");
+
   console.log("\n" + "=".repeat(50));
   console.log("\x1b[1m  Grimm Audio Input (Microphone) Test\x1b[0m");
   console.log("=".repeat(50));
-  console.log("\nThis tool will cycle through all available microphones");
-  console.log("and show a visual level meter for each one.");
-  console.log("Speak into your microphone to see which device picks up audio.\n");
 
-  // Get available devices
+  // Get available devices from PvRecorder (PulseAudio/PipeWire)
   const devices = PvRecorder.getAvailableDevices();
 
   if (devices.length === 0) {
-    console.log("\x1b[31mNo audio input devices found!\x1b[0m");
+    console.log("\n\x1b[31mNo audio input devices found!\x1b[0m");
     console.log("\nPlease check:");
     console.log("  - Your microphone is connected");
     console.log("  - ALSA drivers are installed (sudo apt install alsa-utils)");
+    console.log("  - PulseAudio/PipeWire is running");
     console.log("  - Your user has permission to access audio devices");
     process.exit(1);
   }
 
-  console.log(`Found ${devices.length} audio input device(s):\n`);
+  // Show PvRecorder devices (what the app will use)
+  console.log("\n\x1b[1mPvRecorder devices (PulseAudio/PipeWire):\x1b[0m");
+  console.log("These are the devices Grimm can use:\n");
   devices.forEach((device, index) => {
     console.log(`  [${index}] ${device}`);
   });
+
+  // Optionally show ALSA devices for comparison
+  if (showAlsa || listOnly) {
+    const alsaDevices = await getAlsaDevices();
+    if (alsaDevices.length > 0) {
+      console.log("\n\x1b[1mALSA capture devices (for reference):\x1b[0m");
+      console.log("Raw hardware devices detected by ALSA:\n");
+      alsaDevices.forEach((device) => {
+        console.log(`  - ${device}`);
+      });
+    }
+  }
+
+  // If list only, exit here
+  if (listOnly) {
+    console.log("\n\x1b[33mTip:\x1b[0m If your microphone appears in ALSA but not in PvRecorder,");
+    console.log("it may need to be enabled in PulseAudio/PipeWire:");
+    console.log("  - Run: pactl list sources short");
+    console.log("  - Or use: pavucontrol (GUI)");
+    console.log();
+    return;
+  }
+
+  console.log("\n" + "-".repeat(50));
+  console.log("This tool will cycle through all available microphones");
+  console.log("and show a visual level meter for each one.");
+  console.log("Speak into your microphone to see which device picks up audio.");
+  console.log("-".repeat(50));
 
   console.log("\nStarting tests in 2 seconds...");
   await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -227,6 +295,12 @@ async function main() {
     console.log("  bun run audio:test-mic");
   }
 
+  // Show troubleshooting tip if no working mic found
+  console.log("\n\x1b[33mTroubleshooting:\x1b[0m");
+  console.log("  - Check if mic is muted: pactl list sources | grep -A 10 'your-device'");
+  console.log("  - Unmute: pactl set-source-mute <source-name> 0");
+  console.log("  - Set volume: pactl set-source-volume <source-name> 100%");
+  console.log("  - List sources: pactl list sources short");
   console.log();
 }
 

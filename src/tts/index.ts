@@ -41,7 +41,8 @@ export { playAudio, playStreamingAudio, isPlaybackAvailable, getPlayerName } fro
 
 // Default configuration
 const DEFAULT_MODEL: TTSModel = "eleven_turbo_v2_5";
-const DEFAULT_OUTPUT_FORMAT: OutputFormat = "mp3_44100_128";
+// Use PCM on Linux (for aplay), MP3 on macOS (for afplay)
+const DEFAULT_OUTPUT_FORMAT: OutputFormat = process.platform === "linux" ? "pcm_24000" : "mp3_44100_128";
 const DEFAULT_VOICE_ID = DEFAULT_VOICES.rachel;
 const DEFAULT_TIMEOUT = 30000;
 const API_BASE_URL = "https://api.elevenlabs.io/v1";
