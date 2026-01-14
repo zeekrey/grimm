@@ -116,17 +116,28 @@ async function playWithAplay(audioBuffer: ArrayBuffer, format: string): Promise<
     ? 24000
     : 44100;
 
+  // Debug: save to a known location for inspection
+  const debugFile = "/tmp/grimm-tts-debug.raw";
+  const buffer = Buffer.from(audioBuffer);
+
+  console.log(`[TTS Debug] Format: ${format}, Sample rate: ${sampleRate}`);
+  console.log(`[TTS Debug] Buffer size: ${buffer.length} bytes`);
+  console.log(`[TTS Debug] First 16 bytes: ${buffer.slice(0, 16).toString('hex')}`);
+  console.log(`[TTS Debug] Saving to: ${debugFile}`);
+
+  await writeFile(debugFile, buffer);
+
   await new Promise<void>((resolve, reject) => {
     const proc = spawn("aplay", [
       "-f", "S16_LE",
       "-r", String(sampleRate),
       "-c", "1",
-      "-q",
-      "-",
+      debugFile,
     ]);
 
-    proc.stdin.write(Buffer.from(audioBuffer));
-    proc.stdin.end();
+    proc.stderr.on("data", (data: Buffer) => {
+      console.log(`[aplay] ${data.toString()}`);
+    });
 
     proc.on("close", (code) => {
       if (code === 0) resolve();
